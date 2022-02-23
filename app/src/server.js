@@ -111,9 +111,9 @@ const dir = {
 };
 // html views
 const view = {
-    client: path.join(__dirname, '../../', 'public/view/client.html'),
-    landing: path.join(__dirname, '../../', 'public/view/landing.html'),
-    newCall: path.join(__dirname, '../../', 'public/view/newcall.html'),
+    client: path.join(__dirname, '../../', 'public/view/bbclient.html'),
+    landing: path.join(__dirname, '../../', 'public/view/bbcall.html'),
+    newCall: path.join(__dirname, '../../', 'public/view/bbcall.html'),
     notFound: path.join(__dirname, '../../', 'public/view/404.html'),
     permission: path.join(__dirname, '../../', 'public/view/permission.html'),
     privacy: path.join(__dirname, '../../', 'public/view/privacy.html'),

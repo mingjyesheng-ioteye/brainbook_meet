@@ -28,7 +28,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const isHttps = false; // must be the same to server.js isHttps
 const signalingServerPort = 3000; // must be the same to server.js PORT
-const signalingServer = getSignalingServer();
+const signalingServer = 'https://meet.ioteyeinc.com';
 const roomId = getRoomId();
 const peerInfo = getPeerInfo();
 const peerLoockupUrl = 'https://extreme-ip-lookup.com/json/?key=demo2';
