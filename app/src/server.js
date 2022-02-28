@@ -76,10 +76,16 @@ if (isHttps) {
     Set maxHttpBufferSize from 1e6 (1MB) to 1e7 (10MB)
     Set pingTimeout from 20000 ms to 60000 ms 
 */
-io = new Server({
-    maxHttpBufferSize: 1e7,
-    pingTimeout: 60000,
-}).listen(server);
+// io = new Server({
+//     maxHttpBufferSize: 1e7,
+//     pingTimeout: 60000,
+// }).listen(server);
+
+io = require('socket.io')(server, {
+    cors: {
+      origin: '*',
+    }
+  });
 
 // console.log(io);
 
@@ -111,9 +117,9 @@ const dir = {
 };
 // html views
 const view = {
-    client: path.join(__dirname, '../../', 'public/view/bbclient.html'),
-    landing: path.join(__dirname, '../../', 'public/view/bbcall.html'),
-    newCall: path.join(__dirname, '../../', 'public/view/bbcall.html'),
+    client: path.join(__dirname, '../../', 'public/view/client.html'),
+    landing: path.join(__dirname, '../../', 'public/view/landing.html'),
+    newCall: path.join(__dirname, '../../', 'public/view/newcall.html'),
     notFound: path.join(__dirname, '../../', 'public/view/404.html'),
     permission: path.join(__dirname, '../../', 'public/view/permission.html'),
     privacy: path.join(__dirname, '../../', 'public/view/privacy.html'),
@@ -146,57 +152,62 @@ app.use((err, req, res, next) => {
     }
 });
 
-// all start from here
-app.get(['/'], (req, res) => {
-    res.sendFile(view.landing);
-});
+// All URL patterns should served with the same file.
+app.get(["/", "/:room"], (req, res) =>
+  res.sendFile(path.join(__dirname, "../../public/view/index.html"))
+);
 
-// set new room name and join
-app.get(['/newcall'], (req, res) => {
-    res.sendFile(view.newCall);
-});
+// // all start from here
+// app.get(['/'], (req, res) => {
+//     res.sendFile(view.landing);
+// });
 
-// if not allow video/audio
-app.get(['/permission'], (req, res) => {
-    res.sendFile(view.permission);
-});
+// // set new room name and join
+// app.get(['/newcall'], (req, res) => {
+//     res.sendFile(view.newCall);
+// });
 
-// privacy policy
-app.get(['/privacy'], (req, res) => {
-    res.sendFile(view.privacy);
-});
+// // if not allow video/audio
+// app.get(['/permission'], (req, res) => {
+//     res.sendFile(view.permission);
+// });
 
-// no room name specified to join
-app.get('/join/', (req, res) => {
-    if (Object.keys(req.query).length > 0) {
-        log.debug('Request Query', req.query);
-        /* 
-            http://localhost:3000/join?room=test&name=mirotalk&audio=1&video=1&notify=1
-            https://mirotalk.up.railway.app/join?room=test&name=mirotalk&audio=1&video=1&notify=1
-            https://mirotalk.herokuapp.com/join?room=test&name=mirotalk&audio=1&video=1&notify=1
-        */
-        let roomName = req.query.room;
-        let peerName = req.query.name;
-        let peerAudio = req.query.audio;
-        let peerVideo = req.query.video;
-        let notify = req.query.notify;
-        // all the params are mandatory for the direct room join
-        if (roomName && peerName && peerAudio && peerVideo && notify) {
-            return res.sendFile(view.client);
-        }
-    }
-    res.redirect('/');
-});
+// // privacy policy
+// app.get(['/privacy'], (req, res) => {
+//     res.sendFile(view.privacy);
+// });
 
-// Join Room *
-app.get('/join/*', (req, res) => {
-    if (Object.keys(req.query).length > 0) {
-        log.debug('redirect:' + req.url + ' to ' + url.parse(req.url).pathname);
-        res.redirect(url.parse(req.url).pathname);
-    } else {
-        res.sendFile(view.client);
-    }
-});
+// // no room name specified to join
+// app.get('/join/', (req, res) => {
+//     if (Object.keys(req.query).length > 0) {
+//         log.debug('Request Query', req.query);
+//         /* 
+//             http://localhost:3000/join?room=test&name=mirotalk&audio=1&video=1&notify=1
+//             https://mirotalk.up.railway.app/join?room=test&name=mirotalk&audio=1&video=1&notify=1
+//             https://mirotalk.herokuapp.com/join?room=test&name=mirotalk&audio=1&video=1&notify=1
+//         */
+//         let roomName = req.query.room;
+//         let peerName = req.query.name;
+//         let peerAudio = req.query.audio;
+//         let peerVideo = req.query.video;
+//         let notify = req.query.notify;
+//         // all the params are mandatory for the direct room join
+//         if (roomName && peerName && peerAudio && peerVideo && notify) {
+//             return res.sendFile(view.client);
+//         }
+//     }
+//     res.redirect('/');
+// });
+
+// // Join Room *
+// app.get('/join/*', (req, res) => {
+//     if (Object.keys(req.query).length > 0) {
+//         log.debug('redirect:' + req.url + ' to ' + url.parse(req.url).pathname);
+//         res.redirect(url.parse(req.url).pathname);
+//     } else {
+//         res.sendFile(view.client);
+//     }
+// });
 
 /**
     MiroTalk API v1
@@ -241,10 +252,10 @@ function getMeetingURL(host) {
 
 // end of MiroTalk API v1
 
-// not match any of page before, so 404 not found
-app.get('*', function (req, res) {
-    res.sendFile(view.notFound);
-});
+// // not match any of page before, so 404 not found
+// app.get('*', function (req, res) {
+//     res.sendFile(view.notFound);
+// });
 
 /**
  * You should probably use a different stun-turn server
