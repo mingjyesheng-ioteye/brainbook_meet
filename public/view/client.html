@@ -50,7 +50,13 @@
         <!-- StyleSheet -->
 
         <link rel="stylesheet" href="../css/client.css" />
+        <link rel="stylesheet" href="../css/videoGrid.css" />
         <link rel="stylesheet" href="../css/whiteboard.css" />
+
+        <!-- https://cdnjs.com/libraries/font-awesome -->
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
         <!-- https://animate.style 4 using for swal fadeIn-Out -->
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
@@ -67,10 +73,10 @@
 
         <!-- show this before to join -->
 
-        <div id="loadingDiv">
-            <h1 class="pulsate">Loading...</h1>
+        <div id="loadingDiv" class="center pulsate">
+            <h1>Loading...</h1>
             <pre>
-Please allow camera & microphone
+Please allow the camera or microphone
 access to use this app.
             </pre>
         </div>
@@ -187,8 +193,8 @@ access to use this app.
                     <i class="fas fa-microphone-alt"></i>
                     <select id="recognitionLanguage"></select>
                     <select id="recognitionDialect"></select>
-                    <button type="button" id="speechRecognitionStart" class="fas fa-play">&nbsp;Start</button>
-                    <button type="button" id="speechRecognitionStop" class="fas fa-stop">&nbsp;Stop</button>
+                    <button type="button" id="speechRecognitionStart"><i class="fas fa-play"></i>&nbsp;Start</button>
+                    <button type="button" id="speechRecognitionStop"><i class="fas fa-stop"></i>&nbsp;Stop</button>
                 </div>
             </section>
         </section>
@@ -271,16 +277,19 @@ access to use this app.
                     <div>
                         <label>My name</label><br />
                         <input id="myPeerNameSet" type="text" placeholder="Change name..." />&nbsp;&nbsp;
-                        <button id="myPeerNameSetBtn" class="fas fa-user-edit">&nbsp;Change</button>
+                        <button id="myPeerNameSetBtn"><i class="fas fa-user-edit"></i>&nbsp;Change</button>
                     </div>
                     <br />
                     <div>
                         <label>Participants</label><br />
-                        <button id="muteEveryoneBtn" class="fas fa-microphone">&nbsp;Mute everyone</button>&nbsp;&nbsp;
-                        <button id="hideEveryoneBtn" class="fas fa-video">&nbsp;Hide everyone</button>
+                        <button id="muteEveryoneBtn"><i class="fas fa-microphone"></i>&nbsp;Mute everyone</button
+                        >&nbsp;&nbsp;
+                        <button id="hideEveryoneBtn"><i class="fas fa-video"></i>&nbsp;Hide everyone</button>
                         <br /><br />
                         <label>Security</label><br />
-                        <button id="lockUnlockRoomBtn" class="fas fa-lock-open"></button>
+                        <button id="lockUnlockRoomBtn">
+                            <i id="lockUnlockRoomIco" class="fas fa-lock-open"></i>&nbsp;Lock/unlock room
+                        </button>
                     </div>
                 </div>
 
@@ -289,11 +298,18 @@ access to use this app.
                     <label for="mirotalkTheme">Theme color</label>
                     <br />
                     <select id="mirotalkTheme">
-                        <option value="neon">🟣 MiroTalk - neon</option>
                         <option value="dark">⚫️ MiroTalk - dark</option>
-                        <option value="forest">🟢 MiroTalk - forest</option>
-                        <option value="sky">🔵 MiroTalk - sky</option>
-                        <option value="ghost">⚪️ MiroTalk - ghost</option>
+                        <option value="grey">⚪️ MiroTalk - grey</option>
+                    </select>
+                    <br /><br />
+                    <label>Video fit:</label>
+                    <br />
+                    <select id="videoObjFitSelect">
+                        <option value="fill">fill</option>
+                        <option value="contain">contain</option>
+                        <option value="cover">cover</option>
+                        <option value="scale-down">scale-down</option>
+                        <option value="none">none</option>
                     </select>
                     <br /><br />
                     <label for="mirotalkBtnsBar">Buttons bar</label>
@@ -347,7 +363,7 @@ access to use this app.
             <div id="sendFileInfo"></div>
             <div id="sendFilePercentage"></div>
             <progress id="sendProgress" max="0" value="0"></progress>
-            <button id="sendAbortBtn" class="fas fa-stop-circle">&nbsp; Abort</button>
+            <button id="sendAbortBtn"><i class="fas fa-stop-circle"></i>&nbsp; Abort</button>
         </div>
 
         <!-- End File Send -->
@@ -359,7 +375,7 @@ access to use this app.
             <div id="receiveFileInfo"></div>
             <div id="receiveFilePercentage"></div>
             <progress id="receiveProgress" max="0" value="0"></progress>
-            <button id="receiveHideBtn" class="fas fa-eye-slash">&nbsp; Hide</button>
+            <button id="receiveHideBtn"><i class="fas fa-eye-slash"></i>&nbsp; Hide</button>
         </div>
 
         <!-- Stop File Receive -->
@@ -383,9 +399,16 @@ access to use this app.
 
         <!-- End Youtube Iframe -->
 
+        <!-- Start Video container -->
+
+        <div id="videoMediaContainer">
+            <!-- <div class="Camera"></div> -->
+        </div>
+
+        <!-- End Video container -->
+
         <!-- Js scripts -->
 
-        <script defer src="https://kit.fontawesome.com/d2f1016e6f.js" crossorigin="anonymous"></script>
         <script defer src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
         <script defer src="https://cdn.rawgit.com/muaz-khan/DetectRTC/master/DetectRTC.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5"></script>
@@ -398,6 +421,7 @@ access to use this app.
         <script defer src="../js/client.js"></script>
         <script defer src="../js/detectSpeaking.js"></script>
         <script defer src="../js/speechRecognition.js"></script>
+        <script defer src="../js/videoGrid.js"></script>
 
         <!-- end of Js scripts -->
 
