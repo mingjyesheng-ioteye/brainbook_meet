@@ -32,9 +32,9 @@ const isHttps = true;
 
 function getSignalingServer() {
     if (isHttps) {
-        return 'https://' + 'localhost' + ':' + signalingServerPort;
-        // outside of localhost change it with YOUR-SERVER-DOMAIN
+        return 'https://' + location.hostname + ':' + signalingServerPort;
+        // if need: change it with YOUR-SERVER-DOMAIN-NAME
     }
-    ...
+    //...
 }
 ```

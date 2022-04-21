@@ -18,25 +18,18 @@ dependencies: {
     uuid        : https://www.npmjs.com/package/uuid
     yamljs      : https://www.npmjs.com/package/yamljs
 }
-
-MiroTalk Signaling Server
-
-Copyright (C) 2022 Miroslav Pejic <miroslav.pejic.85@gmail.com>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 */
+
+/**
+ * MiroTalk P2P - Server component
+ *
+ * @link    https://mirotalk.up.railway.app or https://mirotalk.herokuapp.com
+ * @license For open source use: AGPLv3
+ *          For commercial use: https://github.com/miroslavpejic85/mirotalk#commercial-license-or-closed-source
+ * @author  Miroslav Pejic - miroslav.pejic.85@gmail.com
+ * @version 1.0.0
+ *
+ */
 
 'use strict'; // https://www.w3schools.com/js/js_strict.asp
 
@@ -54,7 +47,7 @@ const app = express();
 const Logger = require('./Logger');
 const log = new Logger('server');
 
-const isHttps = false; // must be the same to client.js isHttps
+const isHttps = false; // must be the same on client.js
 const port = process.env.PORT || 3000; // must be the same to client.js signalingServerPort
 
 let io, server, host;
@@ -74,7 +67,6 @@ if (isHttps) {
 
 /*  
     Set maxHttpBufferSize from 1e6 (1MB) to 1e7 (10MB)
-    Set pingTimeout from 20000 ms to 60000 ms 
 */
 // io = new Server({
 //     maxHttpBufferSize: 1e7,
@@ -117,6 +109,7 @@ const dir = {
 };
 // html views
 const view = {
+    about: path.join(__dirname, '../../', 'public/view/about.html'),
     client: path.join(__dirname, '../../', 'public/view/client.html'),
     landing: path.join(__dirname, '../../', 'public/view/landing.html'),
     newCall: path.join(__dirname, '../../', 'public/view/newcall.html'),
@@ -268,14 +261,41 @@ function getMeetingURL(host) {
  * Check the functionality of STUN/TURN servers:
  * https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
  */
-const iceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+const iceServers = [];
 
 if (turnEnabled == 'true') {
-    iceServers.push({
-        urls: turnUrls,
-        username: turnUsername,
-        credential: turnCredential,
-    });
+    iceServers.push(
+        {
+            urls: 'stun:stun.l.google.com:19302',
+        },
+        {
+            urls: turnUrls,
+            username: turnUsername,
+            credential: turnCredential,
+        },
+    );
+} else {
+    // Thanks to https://www.metered.ca/tools/openrelay/
+    iceServers.push(
+        {
+            urls: 'stun:openrelay.metered.ca:80',
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        },
+    );
 }
 
 /**
@@ -293,15 +313,15 @@ async function ngrokStart() {
         let tunnelHttps = pu0.startsWith('https') ? pu0 : pu1;
         // server settings
         log.debug('settings', {
-            server: host,
-            server_tunnel: tunnelHttps,
-            api_docs: api_docs,
-            api_key_secret: api_key_secret,
             iceServers: iceServers,
             ngrok: {
                 ngrok_enabled: ngrokEnabled,
                 ngrok_token: ngrokAuthToken,
             },
+            server: host,
+            server_tunnel: tunnelHttps,
+            api_docs: api_docs,
+            api_key_secret: api_key_secret,
         });
     } catch (err) {
         console.error('[Error] ngrokStart', err);
@@ -328,15 +348,15 @@ server.listen(port, null, () => {
     );
 
     // https tunnel
-    if (ngrokEnabled == 'true') {
+    if (ngrokEnabled == 'true' && isHttps === false) {
         ngrokStart();
     } else {
         // server settings
         log.debug('settings', {
+            iceServers: iceServers,
             server: host,
             api_docs: api_docs,
             api_key_secret: api_key_secret,
-            iceServers: iceServers,
         });
     }
 });
